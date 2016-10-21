@@ -55,7 +55,10 @@ namespace osu.Game.Beatmaps.Formats
                     beatmap.BeatmapInfo.Countdown = int.Parse(val) == 1;
                     break;
                 case @"SampleSet":
-                    beatmap.BeatmapInfo.SampleSet = (SampleSet)Enum.Parse(typeof(SampleSet), val);
+                    beatmap.BeatmapInfo.Sample.Set = (SampleSet)Enum.Parse(typeof(SampleSet), val);
+                    break;
+                case @"SampleVolume":
+                    beatmap.BeatmapInfo.Sample.Volume = int.Parse(val);
                     break;
                 case @"StackLeniency":
                     beatmap.BeatmapInfo.StackLeniency = float.Parse(val, NumberFormatInfo.InvariantInfo);
@@ -185,7 +188,48 @@ namespace osu.Game.Beatmaps.Formats
 
         private void handleTimingPoints(Beatmap beatmap, string val)
         {
-            // TODO
+            string[] split = val.Split(',');
+
+            ControlPoint p = null;
+
+            if (split.Length > 2)
+            {
+                bool timingChange = split.Length <= 6 || split[6][0] == '1';
+
+                if (timingChange)
+                {
+                    p = new TimingChange
+                    {
+                        BeatLength = double.Parse(split[1].Trim(), NumberFormatInfo.InvariantInfo),
+                        TimeSignature = split[2][0] == '0' ? TimeSignatures.SimpleQuadruple : (TimeSignatures)int.Parse(split[2]),
+                    };
+                }
+                else
+                    p = new SampleChange();
+
+                p.Time = double.Parse(split[0].Trim(), NumberFormatInfo.InvariantInfo);
+                p.Sample = new SampleInfo
+                {
+                    Set = (SampleSet)int.Parse(split[3]),
+                    Bank = split.Length > 4 ? (SampleBank)int.Parse(split[4]) : SampleBank.Default,
+                    Volume = split.Length > 5 ? int.Parse(split[5]) : beatmap.BeatmapInfo.Sample.Volume
+                };
+
+                p.EffectFlags = (EffectFlags)(split.Length > 7 ? int.Parse(split[7], NumberFormatInfo.InvariantInfo) : 0);
+            }
+            else if (split.Length == 2)
+            {
+                p = new TimingChange
+                {
+                    Time = double.Parse(split[0].Trim(), NumberFormatInfo.InvariantInfo),
+                    BeatLength = double.Parse(split[1].Trim(), NumberFormatInfo.InvariantInfo),
+                    TimeSignature = TimeSignatures.SimpleQuadruple,
+                    Sample = beatmap.BeatmapInfo.Sample.Clone()
+                };
+            }
+
+            if (p != null)
+                beatmap.ControlPoints.Add(p);
         }
 
         private void handleColours(Beatmap beatmap, string key, string val)

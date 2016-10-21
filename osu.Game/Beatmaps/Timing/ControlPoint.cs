@@ -6,11 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using osu.Game.Beatmaps.Samples;
 
 namespace osu.Game.Beatmaps.Timing
 {
     public class ControlPoint
     {
         public double Time;
+        public SampleInfo Sample;
+        public EffectFlags EffectFlags;
+    }
+
+    public enum EffectFlags
+    {
+        None = 0,
+        Kiai = 1,
+        OmitFirstBarLine = 8
     }
 }

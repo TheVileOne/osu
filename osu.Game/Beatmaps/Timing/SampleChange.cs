@@ -12,6 +12,5 @@ namespace osu.Game.Beatmaps.Timing
 {
     class SampleChange : ControlPoint
     {
-        public SampleInfo Sample;
     }
 }

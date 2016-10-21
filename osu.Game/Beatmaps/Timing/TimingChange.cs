@@ -12,7 +12,14 @@ namespace osu.Game.Beatmaps.Timing
     class TimingChange : ControlPoint
     {
         public double BeatLength;
+        public TimeSignatures TimeSignature;
 
         public double BPM => 60000 / BeatLength;
+    }
+
+    public enum TimeSignatures
+    {
+        SimpleQuadruple = 4,
+        SimpleTriple = 3
     }
 }

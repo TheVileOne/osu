@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using osu.Game.Beatmaps.Samples;
+using osu.Game.Beatmaps.Timing;
 using osu.Game.GameModes.Play;
 using SQLite.Net.Attributes;
 using SQLiteNetExtensions.Attributes;
@@ -13,6 +14,7 @@ namespace osu.Game.Database
         {
             BaseDifficulty = new BaseDifficulty();
             Metadata = new BeatmapMetadata();
+            Sample = new SampleInfo();
         }
 
         [PrimaryKey]
@@ -33,7 +35,8 @@ namespace osu.Game.Database
         // General
         public int AudioLeadIn { get; set; }
         public bool Countdown { get; set; }
-        public SampleSet SampleSet { get; set; }
+        [OneToOne]
+        public SampleInfo Sample { get; set; }
         public float StackLeniency { get; set; }
         public bool SpecialStyle { get; set; }
         public PlayMode Mode { get; set; }
